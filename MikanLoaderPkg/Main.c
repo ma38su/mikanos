@@ -1,4 +1,5 @@
 #include  <Uefi.h>
+#include  <stdalign.h>
 #include  <Library/UefiLib.h>
 #include  <Library/UefiBootServicesTableLib.h>
 #include  <Library/PrintLib.h>
@@ -250,7 +251,7 @@ EFI_STATUS EFIAPI UefiMain(
   }
 
   UINTN file_info_size = sizeof(EFI_FILE_INFO) + sizeof(CHAR16) * 12;
-  UINT8 file_info_buffer[file_info_size];
+  alignas(alignof(EFI_FILE_INFO)) UINT8 file_info_buffer[file_info_size];
   status = kernel_file->GetInfo(
       kernel_file, &gEfiFileInfoGuid,
       &file_info_size, file_info_buffer);
