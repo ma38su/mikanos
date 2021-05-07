@@ -1,13 +1,13 @@
 TARGET = kernel.elf
-OBJS = main.o
+OBJS = main.o graphics.o font.o
 
 CXXFLAGS += -O2 -Wall -g --target=x86_64-elf -ffreestanding -mno-red-zone \
-	-fno-exceptions -fno-rtti -std=c++17 \
-  -I$${HOME}/osbook/devenv/x86_64-elf/include/c++/v1 \
-  -I$${HOME}/osbook/devenv/x86_64-elf/include \
-  -I$${HOME}/osbook/devenv/x86_64-elf/include/freetype2 \
-  -nostdlibinc \
-  -D__ELF__ -D_LDB_EQ_DBL -D_GNU_SOURCE -D_POSIX_TIMERS
+            -I$${HOME}/osbook/devenv/x86_64-elf/include/c++/v1 \
+            -I$${HOME}/osbook/devenv/x86_64-elf/include \
+            -I$${HOME}/osbook/devenv/x86_64-elf/include/freetype2 \
+            -nostdlibinc \
+            -D__ELF__ -D_LDB_EQ_DBL -D_GNU_SOURCE -D_POSIX_TIMERS \
+            -fno-exceptions -fno-rtti -std=c++17
 LDFLAGS  += --entry KernelMain -z norelro --image-base 0x100000 --static \
   -L$${HOME}/osbook/devenv/x86_64-elf/lib
 
