@@ -1,5 +1,5 @@
 TARGET = kernel.elf
-OBJS = main.o graphics.o font.o
+OBJS = main.o graphics.o font.o hankaku.o
 
 CXXFLAGS += -O2 -Wall -g --target=x86_64-elf -ffreestanding -mno-red-zone \
             -I$${HOME}/osbook/devenv/x86_64-elf/include/c++/v1 \
@@ -21,6 +21,11 @@ clean:
 kernel.elf: $(OBJS) Makefile
 	ld.lld $(LDFLAGS) -o kernel.elf $(OBJS)
 
+hankaku.o: hankaku.txt
+	../tools/makefont.py -o hankaku.bin hankaku.txt
+	objcopy -I binary -O elf64-x86-64 -B i386:x86-64 hankaku.bin hankaku.o
+
 %.o: %.cpp Makefile
 	clang++ $(CPPFLAGS) $(CXXFLAGS) -c $<
+
 
