@@ -8,7 +8,7 @@ class Console {
 
   Console(PixelWriter& writer,
       const PixelColor& fg_color, const PixelColor& bg_color);
-  void PutString(const char *s);
+  void PutString(const char* s);
 
  private:
   void Newline();
