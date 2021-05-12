@@ -8,7 +8,7 @@ Console::Console(PixelWriter& writer,
       buffer_{}, cursor_row_{0}, cursor_column_{0} {
 }
 
-void Console::PutString(const char *s) {
+void Console::PutString(const char* s) {
   while (*s) {
     if (*s == '\n') {
       Newline();
