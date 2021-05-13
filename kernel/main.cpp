@@ -6,11 +6,7 @@
 #include "graphics.hpp"
 #include "font.hpp"
 #include "console.hpp"
-
-// #@@range_begin(placement_new)
-void* operator new(size_t size, void* buf) {
-  return buf;
-}
+#include "pci.hpp"
 
 void operator delete(void* obj) noexcept {
 }
@@ -102,6 +98,7 @@ extern "C" void KernelMain(const FrameBufferConfig& frame_buffer_config) {
   console = new(console_buf) Console{
     *pixel_writer, kDesktopFGColor, kDesktopBGColor
   };
+  printk("Hello, MikanOS!\n");
 
   for (int dy = 0; dy < kMouseCursorHeight; ++dy) {
     for (int dx = 0; dx < kMouseCursorWidth; ++dx) {
@@ -113,9 +110,18 @@ extern "C" void KernelMain(const FrameBufferConfig& frame_buffer_config) {
     }
   }
 
-  for (int i = 0; i < 27; ++i) {
-    printk("printk: %d\n", i);
+  // #@@range_begin(show_devices)
+  auto err = pci::ScanAllBus();
+  printk("ScanAllBus: %s\n", err.Name());
+  for (int i = 0; i < pci::num_device; ++i) {
+    const auto& dev = pci::devices[i];
+    auto vendor_id = pci::ReadVendorId(dev.bus, dev.device, dev.function);
+    auto class_code = pci::ReadClassCode(dev.bus, dev.device, dev.function);
+    printk("%d.%d.%d: vend %04x, class %08x, head %02x\n",
+        dev.bus, dev.device, dev.function,
+        vendor_id, class_code, dev.header_type);
   }
+
   while (1) __asm__("hlt");
 }
 

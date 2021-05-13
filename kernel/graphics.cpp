@@ -34,4 +34,3 @@ void FillRectangle(PixelWriter& writer, const Vector2D<int>& pos,
     }
   }
 }
-

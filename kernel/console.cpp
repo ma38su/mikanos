@@ -1,4 +1,5 @@
 #include "console.hpp"
+
 #include <cstring>
 #include "font.hpp"
 

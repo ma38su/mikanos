@@ -51,4 +51,3 @@ void DrawRectangle(PixelWriter& writer, const Vector2D<int>& pos,
 
 void FillRectangle(PixelWriter& writer, const Vector2D<int>& pos,
                    const Vector2D<int>& size, const PixelColor& c);
-
