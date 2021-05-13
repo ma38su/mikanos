@@ -1,5 +1,6 @@
 TARGET = kernel.elf
-OBJS = main.o graphics.o font.o hankaku.o newlib_support.o console.o pci.o asmfunc.o
+OBJS = main.o graphics.o font.o hankaku.o newlib_support.o console.o \
+        pci.o asmfunc.o logger.o
 DEPENDS = $(join $(dir $(OBJS)),$(addprefix .,$(notdir $(OBJS:.o=.d))))
 
 CFLAGS   += -O2 -Wall -g --target=x86_64-elf -ffreestanding -mno-red-zone
@@ -42,5 +43,11 @@ hankaku.o: hankaku.bin
 .PHONY: depends
 depends:
 	$(MAKE) $(DEPENDS)
+
+.PHONY: run
+run:
+	~/osbook/devenv/run_qemu.sh \
+    ~/edk2/Build/MikanLoaderX64/DEBUG_CLANG38/X64/Loader.efi \
+    ~/workspace/mikanos/kernel/kernel.elf
 
 -include $(DEPENDS)
