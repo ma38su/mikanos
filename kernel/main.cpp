@@ -167,7 +167,7 @@ extern "C" void KernelMainNewStack(const FrameBufferConfig& frame_buffer_config_
   SetDSAll(0);
   SetCSSS(kernel_cs, kernel_ss);
   
-  //SetupIdentityPageTable();
+  SetupIdentityPageTable();
 
   const std::array available_memory_types{
     MemoryType::kEfiBootServicesCode,
