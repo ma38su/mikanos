@@ -19,6 +19,7 @@
 #include "asmfunc.h"
 #include "queue.hpp"
 #include "segment.hpp"
+#include "paging.hpp"
 
 const PixelColor kDesktopBGColor{45, 118, 237};
 const PixelColor kDesktopFGColor{255, 255, 255};
@@ -139,7 +140,7 @@ extern "C" void KernelMainNewStack(const FrameBufferConfig& frame_buffer_config_
   SetDSAll(0);
   SetCSSS(kernel_cs, kernel_ss);
   
-  //SetupIdentityPageTable();
+  SetupIdentityPageTable();
 
   const std::array available_memory_types{
     MemoryType::kEfiBootServicesCode,
