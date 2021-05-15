@@ -19,6 +19,7 @@
 #include "asmfunc.h"
 #include "queue.hpp"
 #include "segment.hpp"
+#include "paging.hpp"
 
 const PixelColor kDesktopBGColor{45, 118, 237};
 const PixelColor kDesktopFGColor{255, 255, 255};
