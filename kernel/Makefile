@@ -16,7 +16,7 @@ CXXFLAGS += -O2 -Wall -g --target=x86_64-elf -ffreestanding -mno-red-zone \
             -nostdlibinc \
             -D__ELF__ -D_LDB_EQ_DBL -D_GNU_SOURCE -D_POSIX_TIMERS \
             -fno-exceptions -fno-rtti -std=c++17
-LDFLAGS  += --entry KernelMain -z norelro --image-base 0x100000 --static \
+LDFLAGS  += --entry KernelMainNewStack -z norelro --image-base 0x100000 --static \
             -L$${HOME}/osbook/devenv/x86_64-elf/lib
 
 .PHONY: all
