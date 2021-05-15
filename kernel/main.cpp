@@ -44,31 +44,8 @@ int printk(const char* format, ...) {
   return result;
 }
 
-::memory_manager = new(memory_manager_buf) BitmapMemoryManager;
-
-const auto memory_map_base = reinterpret_cast<uintptr_t>(memory_map.buffer);
-uintptr_t available_end = 0;
-for (uintptr_t iter = memory_map_base;
-     iter < memory_map_base + memory_map.map_size;
-     iter += memory_map.descriptor_size) {
-  auto desc = reinterpret_cast<const MemoryDescriptor*>(iter);
-  if (available_end < desc->physical_start) {
-    memory_manager->MarkAllocated(
-        FrameID{available_end / kBytesPerFrames},
-        (desc->physical_start - available_end) / kBytesPerFrame);
-  }
-
-  const auto physical_end =
-    desc->physical_start + desc->number_of_pages * kUEFIPageSize;
-  if (IsAvailable(static_cast<MemoryType>(desc->type))) {
-    available_end = physical_end;
-  } else {
-    memory_manager->MarkAllocated(
-        FrameID{desc->physical_start / kBytesPerFrame},
-        desc->number_of_pages * kUEFIPageSize / kBytePerFrame);
-  }
-}
-memory_manager->SetMemoryRange(FrameID{1}, FrameID{available_end / kBytesPerFrame});
+char memory_manager_buf[sizeof(BitmapMemoryManager)];
+BitmapMemoryManager* memory_manager;
 
 char mouse_cursor_buf[sizeof(MouseCursor)];
 MouseCursor* mouse_cursor;
@@ -117,8 +94,9 @@ void IntHandlerXHCI(InterruptFrame* frame) {
 
 alignas(16) uint8_t kernel_main_stack[1024 * 1024];
 
-extern "C" void KernelMainNewStack(const FrameBufferConfig& frame_buffer_config_ref,
-                           const MemoryMap& memory_map_ref) {
+extern "C" void KernelMainNewStack(
+    const FrameBufferConfig& frame_buffer_config_ref,
+    const MemoryMap& memory_map_ref) {
   FrameBufferConfig frame_buffer_config{frame_buffer_config_ref};
   MemoryMap memory_map{memory_map_ref};
   switch (frame_buffer_config.pixel_format) {
@@ -166,31 +144,34 @@ extern "C" void KernelMainNewStack(const FrameBufferConfig& frame_buffer_config_
   const uint16_t kernel_ss = 2 << 3;
   SetDSAll(0);
   SetCSSS(kernel_cs, kernel_ss);
-  
+
   SetupIdentityPageTable();
 
-  const std::array available_memory_types{
-    MemoryType::kEfiBootServicesCode,
-    MemoryType::kEfiBootServicesData,
-    MemoryType::kEfiConventionalMemory,
-  };
+  ::memory_manager = new(memory_manager_buf) BitmapMemoryManager;
 
-  printk("memory_map: %p\n", &memory_map);
-  for (uintptr_t iter = reinterpret_cast<uintptr_t>(memory_map.buffer);
-       iter < reinterpret_cast<uintptr_t>(memory_map.buffer) + memory_map.map_size;
+  const auto memory_map_base = reinterpret_cast<uintptr_t>(memory_map.buffer);
+  uintptr_t available_end = 0;
+  for (uintptr_t iter = memory_map_base;
+       iter < memory_map_base + memory_map.map_size;
        iter += memory_map.descriptor_size) {
-    auto desc = reinterpret_cast<MemoryDescriptor*>(iter);
-    for (int i = 0; i < available_memory_types.size(); ++i) {
-      if (desc->type == available_memory_types[i]) {
-        printk("type = %u, phys = %08lx - %08lx, pages = %lu, attr = %08lx\n",
-            desc->type,
-            desc->physical_start,
-            desc->physical_start + desc->number_of_pages * 4096 - 1,
-            desc->number_of_pages,
-            desc->attribute);
-      }
+    auto desc = reinterpret_cast<const MemoryDescriptor*>(iter);
+    if (available_end < desc->physical_start) {
+      memory_manager->MarkAllocated(
+          FrameID{available_end / kBytesPerFrame},
+          (desc->physical_start - available_end) / kBytesPerFrame);
+    }
+
+    const auto physical_end =
+      desc->physical_start + desc->number_of_pages * kUEFIPageSize;
+    if (IsAvailable(static_cast<MemoryType>(desc->type))) {
+      available_end = physical_end;
+    } else {
+      memory_manager->MarkAllocated(
+          FrameID{desc->physical_start / kBytesPerFrame},
+          desc->number_of_pages * kUEFIPageSize / kBytesPerFrame);
     }
   }
+  memory_manager->SetMemoryRange(FrameID{1}, FrameID{available_end / kBytesPerFrame});
 
   mouse_cursor = new(mouse_cursor_buf) MouseCursor{
     pixel_writer, kDesktopBGColor, {300, 200}
@@ -230,9 +211,8 @@ extern "C" void KernelMainNewStack(const FrameBufferConfig& frame_buffer_config_
         xhc_dev->bus, xhc_dev->device, xhc_dev->function);
   }
 
-  const uint16_t cs = GetCS();
   SetIDTEntry(idt[InterruptVector::kXHCI], MakeIDTAttr(DescriptorType::kInterruptGate, 0),
-              reinterpret_cast<uint64_t>(IntHandlerXHCI), cs);
+              reinterpret_cast<uint64_t>(IntHandlerXHCI), kernel_cs);
   LoadIDT(sizeof(idt) - 1, reinterpret_cast<uintptr_t>(&idt[0]));
 
   const uint8_t bsp_local_apic_id =
