@@ -10,10 +10,10 @@ DEPENDS = $(join $(dir $(OBJS)),$(addprefix .,$(notdir $(OBJS:.o=.d))))
 
 CPPFLAGS = -D__ELF__ -D_LDB_EQ_DBL -D_GNU_SOURCE -D_POSIX_TIMERS \
            -nostdlibinc \
-           -I. \
            -I$${HOME}/osbook/devenv/x86_64-elf/include/c++/v1 \
            -I$${HOME}/osbook/devenv/x86_64-elf/include \
-           -I$${HOME}/osbook/devenv/x86_64-elf/include/freetype2
+           -I$${HOME}/osbook/devenv/x86_64-elf/include/freetype2 \
+           -I.
 CFLAGS   += -O2 -Wall -g --target=x86_64-elf -ffreestanding -mno-red-zone
 CXXFLAGS += -O2 -Wall -g --target=x86_64-elf -ffreestanding -mno-red-zone \
             -fno-exceptions -fno-rtti -std=c++17
