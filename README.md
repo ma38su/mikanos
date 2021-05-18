@@ -29,5 +29,7 @@ $ build
 # How to Run
 
 ```sh
-$ ~/osbook/devenv/run_qemu.sh ~/edk2/Build/MikanLoaderX64/DEBUG_CLANG38/X64/Loader.efi ~/workspace/mikanos/kernel/kernel.elf
+$ cd mikanos/kernel
+$ make run
 ```
+

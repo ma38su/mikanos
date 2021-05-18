@@ -55,7 +55,7 @@ void MouseObserver(int8_t displacement_x, int8_t displacement_y) {
   layer_manager->Draw();
   auto elapsed = LAPICTimerElapsed();
   StopLAPICTimer();
-  printk("Mouse Observer: elapsed = %u\n", elapsed);
+  printk("MouseObserver: elapsed = %u\n", elapsed);
 }
 
 void SwitchEhci2Xhci(const pci::Device& xhc_dev) {
@@ -249,19 +249,26 @@ extern "C" void KernelMainNewStack(
   const int kFrameWidth = frame_buffer_config.horizontal_resolution;
   const int kFrameHeight = frame_buffer_config.vertical_resolution;
 
-  auto bgwindow = std::make_shared<Window>(kFrameWidth, kFrameHeight);
+  auto bgwindow = std::make_shared<Window>(
+      kFrameWidth, kFrameHeight, frame_buffer_config.pixel_format);
   auto bgwriter = bgwindow->Writer();
 
   DrawDesktop(*bgwriter);
   console->SetWriter(bgwriter);
 
   auto mouse_window = std::make_shared<Window>(
-      kMouseCursorWidth, kMouseCursorHeight);
+      kMouseCursorWidth, kMouseCursorHeight, frame_buffer_config.pixel_format);
   mouse_window->SetTransparentColor(kMouseTransparentColor);
   DrawMouseCursor(mouse_window->Writer(), {0, 0});
 
+  FrameBuffer screen;
+  if (auto err = screen.Initialize(frame_buffer_config)) {
+    Log(kError, "failed to initialize frame buffer: %s at %s.%d\n",
+        err.Name(), err.File(), err.Line());
+  }
+
   layer_manager = new LayerManager;
-  layer_manager->SetWriter(pixel_writer);
+  layer_manager->SetWriter(&screen);
 
   auto bglayer_id = layer_manager->NewLayer()
     .SetWindow(bgwindow)
