@@ -40,12 +40,6 @@ int printk(const char* format, ...) {
   result = vsprintf(s, format, ap);
   va_end(ap);
 
-  StartLAPICTimer();
-  console->PutString(s);
-  auto elapsed = LAPICTimerElapsed();
-  StopLAPICTimer();
-
-  sprintf(s, "[%9d]", elapsed);
   console->PutString(s);
   return result;
 }
@@ -122,8 +116,6 @@ extern "C" void KernelMainNewStack(
     case kPixelBGRResv8BitPerColor:
       pixel_writer = new(pixel_writer_buf)
         BGRResv8BitPerColorPixelWriter{frame_buffer_config};
-      break;
-    default:
       break;
   }
 
@@ -272,6 +264,7 @@ extern "C" void KernelMainNewStack(
       kMouseCursorWidth, kMouseCursorHeight, frame_buffer_config.pixel_format);
   mouse_window->SetTransparentColor(kMouseTransparentColor);
   DrawMouseCursor(mouse_window->Writer(), {0, 0});
+  mouse_position = {200, 200};
 
   FrameBuffer screen;
   if (auto err = screen.Initialize(frame_buffer_config)) {
@@ -288,7 +281,7 @@ extern "C" void KernelMainNewStack(
     .ID();
   mouse_layer_id = layer_manager->NewLayer()
     .SetWindow(mouse_window)
-    .Move({200, 200})
+    .Move(mouse_position)
     .ID();
 
   layer_manager->UpDown(bglayer_id, 0);
