@@ -30,9 +30,12 @@ class Layer {
   Layer& SetWindow(const std::shared_ptr<Window>& window);
   /** @brief 設定されたウィンドウを返す。 */
   std::shared_ptr<Window> GetWindow() const;
-
   /** @brief レイヤーの原点座標を取得する。 */
   Vector2D<int> GetPosition() const;
+  /** @brief true でレイヤーがドラッグ移動可能となる。 */
+  Layer& SetDraggable(bool draggable);
+  /** @brief レイヤーがドラッグ移動可能なら true を返す。 */
+  bool IsDraggable() const;
 
   /** @brief レイヤーの位置情報を指定された絶対座標へと更新する。再描画はしない。 */
   Layer& Move(Vector2D<int> pos);
@@ -46,6 +49,7 @@ class Layer {
   unsigned int id_;
   Vector2D<int> pos_;
   std::shared_ptr<Window> window_;
+  bool draggable_{false};
 };
 // #@@range_end(layer)
 
