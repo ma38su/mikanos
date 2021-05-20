@@ -43,6 +43,7 @@ void Console::SetWindow(const std::shared_ptr<Window>& window) {
   if (window == window_) {
     return;
   }
+  window_.reset();
   window_ = window;
   writer_ = window->Writer();
   Refresh();

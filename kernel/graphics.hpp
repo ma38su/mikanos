@@ -34,14 +34,6 @@ struct Vector2D {
   }
 
   template <typename U>
-  Vector2D<T> operator +(const int rhs) const {
-    auto tmp = *this;
-    tmp.x += rhs;
-    tmp.y += rhs;
-    return tmp;
-  }
-
-  template <typename U>
   Vector2D<T>& operator -=(const Vector2D<U>& rhs) {
     x -= rhs.x;
     y -= rhs.y;
@@ -52,14 +44,6 @@ struct Vector2D {
   Vector2D<T> operator -(const Vector2D<U>& rhs) const {
     auto tmp = *this;
     tmp -= rhs;
-    return tmp;
-  }
-
-  template <typename U>
-  Vector2D<T> operator -(const int rhs) const {
-    auto tmp = *this;
-    tmp.x -= rhs;
-    tmp.y -= rhs;
     return tmp;
   }
 };
