@@ -1,9 +1,3 @@
-/**
- * @file mouse.hpp
- *
- * マウス制御プログラム．
- */
-
 #include "mouse.hpp"
 
 #include <limits>
