@@ -47,8 +47,8 @@ class Layer {
 
  private:
   unsigned int id_;
-  Vector2D<int> pos_;
-  std::shared_ptr<Window> window_;
+  Vector2D<int> pos_{};
+  std::shared_ptr<Window> window_{};
   bool draggable_{false};
 };
 // #@@range_end(layer)
@@ -99,4 +99,5 @@ class LayerManager {
 };
 
 extern LayerManager* layer_manager;
-// #@@range_end(layer_manager)
+
+void InitializeLayer();

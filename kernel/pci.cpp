@@ -1,11 +1,18 @@
+/**
+ * @file pci.cpp
+ *
+ * PCI バス制御のプログラムを集めたファイル．
+ */
 
 #include "pci.hpp"
 
 #include "asmfunc.h"
+#include "logger.hpp"
 
 namespace {
   using namespace pci;
 
+  /** @brief CONFIG_ADDRESS 用の 32 ビット整数を生成する */
   uint32_t MakeAddress(uint8_t bus, uint8_t device,
                        uint8_t function, uint8_t reg_addr) {
     auto shl = [](uint32_t x, unsigned int bits) {
@@ -19,6 +26,7 @@ namespace {
         | (reg_addr & 0xfcu);
   }
 
+  /** @brief devices[num_device] に情報を書き込み num_device をインクリメントする． */
   Error AddDevice(const Device& device) {
     if (num_device == devices.size()) {
       return MAKE_ERROR(Error::kFull);
@@ -31,6 +39,9 @@ namespace {
 
   Error ScanBus(uint8_t bus);
 
+  /** @brief 指定のファンクションを devices に追加する．
+   * もし PCI-PCI ブリッジなら，セカンダリバスに対し ScanBus を実行する
+   */
   Error ScanFunction(uint8_t bus, uint8_t device, uint8_t function) {
     auto class_code = ReadClassCode(bus, device, function);
     auto header_type = ReadHeaderType(bus, device, function);
@@ -48,6 +59,9 @@ namespace {
     return MAKE_ERROR(Error::kSuccess);
   }
 
+  /** @brief 指定のデバイス番号の各ファンクションをスキャンする．
+   * 有効なファンクションを見つけたら ScanFunction を実行する．
+   */
   Error ScanDevice(uint8_t bus, uint8_t device) {
     if (auto err = ScanFunction(bus, device, 0)) {
       return err;
@@ -67,6 +81,9 @@ namespace {
     return MAKE_ERROR(Error::kSuccess);
   }
 
+  /** @brief 指定のバス番号の各デバイスをスキャンする．
+   * 有効なデバイスを見つけたら ScanDevice を実行する．
+   */
   Error ScanBus(uint8_t bus) {
     for (uint8_t device = 0; device < 32; ++device) {
       if (ReadVendorId(bus, device, 0) == 0xffffu) {
@@ -303,3 +320,18 @@ namespace pci {
 
 }
 
+void InitializePCI() {
+  if (auto err = pci::ScanAllBus()) {
+    Log(kError, "ScanAllBus: %s\n", err.Name());
+    exit(1);
+  }
+
+  for (int i = 0; i < pci::num_device; ++i) {
+    const auto& dev = pci::devices[i];
+    auto vendor_id = pci::ReadVendorId(dev);
+    auto class_code = pci::ReadClassCode(dev.bus, dev.device, dev.function);
+    Log(kDebug, "%d.%d.%d: vend %04x, class %08x, head %02x\n",
+        dev.bus, dev.device, dev.function,
+        vendor_id, class_code, dev.header_type);
+  }
+}

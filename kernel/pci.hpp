@@ -1,3 +1,9 @@
+/**
+ * @file pci.hpp
+ *
+ * PCI バス制御のプログラムを集めたファイル．
+ */
+
 #pragma once
 
 #include <cstdint>
@@ -67,7 +73,6 @@ namespace pci {
 
   /** @brief 指定された PCI デバイスの 32 ビットレジスタを読み取る */
   uint32_t ReadConfReg(const Device& dev, uint8_t reg_addr);
-
   /** @brief 指定された PCI デバイスの 32 ビットレジスタに書き込む */
   void WriteConfReg(const Device& dev, uint8_t reg_addr, uint32_t value);
 
@@ -85,10 +90,8 @@ namespace pci {
 
   /** @brief ScanAllBus() により発見された PCI デバイスの一覧 */
   inline std::array<Device, 32> devices;
-
   /** @brief devices の有効な要素の数 */
   inline int num_device;
-
   /** @brief PCI デバイスをすべて探索し devices に格納する
    *
    * バス 0 から再帰的に PCI デバイスを探索し，devices の先頭から詰めて書き込む．
@@ -178,3 +181,5 @@ namespace pci {
       MSITriggerMode trigger_mode, MSIDeliveryMode delivery_mode,
       uint8_t vector, unsigned int num_vector_exponent);
 }
+
+void InitializePCI();
