@@ -90,14 +90,19 @@ extern "C" void KernelMainNewStack(
   InitializeMouse();
   layer_manager->Draw({{0, 0}, ScreenSize()});
 
-  InitializeLAPICTimer();
+  InitializeLAPICTimer(*main_queue);
+
+  timer_manager->AddTimer(Timer(200, 2));
+  timer_manager->AddTimer(Timer(600, -1));
 
   char str[128];
-  unsigned int count = 0;
 
   while (true) {
-    ++count;
-    sprintf(str, "%010u", count);
+    __asm__("cli");
+    const auto tick = timer_manager->CurrentTick();
+    __asm__("sti");
+
+    sprintf(str, "%010lu", tick);
     FillRectangle(*main_window->Writer(), {24, 28}, {8 * 10, 16}, {0xc6, 0xc6, 0xc6});
     WriteString(*main_window->Writer(), {24, 28}, str, {0, 0, 0});
     layer_manager->Draw(main_window_layer_id);
@@ -105,7 +110,7 @@ extern "C" void KernelMainNewStack(
     __asm__("cli");
     if (main_queue->size() == 0) {
       __asm__("sti");
-      //__asm__("hlt");
+      __asm__("hlt");
       continue;
     }
 
@@ -117,8 +122,13 @@ extern "C" void KernelMainNewStack(
     case Message::kInterruptXHCI:
       usb::xhci::ProcessEvents();
       break;
-    case Message::kInterruptLAPICTimer:
-      printk("Timer interrupt\n");
+    case Message::kTimerTimeout:
+      printk("Timer: timeout = %lu, value = %d\n",
+          msg.arg.timer.timeout, msg.arg.timer.value);
+      if (msg.arg.timer.value > 0) {
+        timer_manager->AddTimer(Timer(
+            msg.arg.timer.timeout + 100, msg.arg.timer.value + 1));
+      }
       break;
     default:
       Log(kError, "Unknown message type: %d\n", msg.type);
