@@ -53,6 +53,7 @@ Error FrameBuffer::Initialize(const FrameBufferConfig& config) {
     default:
       return MAKE_ERROR(Error::kUnknownPixelFormat);
   }
+
   return MAKE_ERROR(Error::kSuccess);
 }
 

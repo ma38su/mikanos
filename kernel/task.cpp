@@ -114,6 +114,7 @@ void TaskManager::SwitchTask(bool current_sleep) {
   }
 
   Task* next_task = running_[current_level_].front();
+
   SwitchContext(&next_task->Context(), &current_task->Context());
 }
 

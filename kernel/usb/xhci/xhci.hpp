@@ -7,7 +7,6 @@
 #pragma once
 
 #include <memory>
-
 #include "error.hpp"
 #include "usb/xhci/registers.hpp"
 #include "usb/xhci/context.hpp"
