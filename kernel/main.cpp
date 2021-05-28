@@ -208,7 +208,6 @@ extern "C" void KernelMainNewStack(
     .InitContext(TaskB, 45)
     .Wakeup()
     .ID();
-
   const uint64_t task_terminal_id = task_manager->NewTask()
     .InitContext(TaskTerminal, 0)
     .Wakeup()
