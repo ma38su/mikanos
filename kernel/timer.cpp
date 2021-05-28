@@ -78,6 +78,7 @@ bool TimerManager::Tick() {
 
     timers_.pop();
   }
+
   return task_timer_timeout;
 }
 

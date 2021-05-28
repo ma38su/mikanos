@@ -44,6 +44,7 @@ class Task {
 
   int Level() const { return level_; }
   bool Running() const { return running_; }
+
  private:
   uint64_t id_;
   std::vector<uint64_t> stack_;
