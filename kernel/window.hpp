@@ -59,7 +59,6 @@ class Window {
 
   /** @brief 指定した位置のピクセルを返す。 */
   const PixelColor& At(Vector2D<int> pos) const;
-
   /** @brief 指定した位置にピクセルを書き込む。 */
   void Write(Vector2D<int> pos, PixelColor c);
 

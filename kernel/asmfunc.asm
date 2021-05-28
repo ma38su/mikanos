@@ -167,4 +167,3 @@ SwitchContext:  ; void SwitchContext(void* next_ctx, void* current_ctx);
     mov rdi, [rdi + 0x60]
 
     o64 iret
-
