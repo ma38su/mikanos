@@ -2,5 +2,5 @@ bits 64
 section .text
 
 loop:
-  hlt
-  jmp loop
+    hlt
+    jmp loop
