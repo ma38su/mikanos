@@ -117,4 +117,3 @@ void InitializeMemoryManager(const MemoryMap& memory_map) {
     exit(1);
   }
 }
-
