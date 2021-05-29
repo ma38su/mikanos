@@ -41,8 +41,8 @@ void Console::SetWriter(PixelWriter* writer) {
   if (writer == writer_) {
     return;
   }
-  window_.reset();
   writer_ = writer;
+  window_.reset();
   Refresh();
 }
 
