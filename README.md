@@ -10,14 +10,6 @@ MikanOS: An Educational Operating System
 - kernel
     - The MikanOS Kernel
 
-# How to build kernel
-
-```sh
-$ cd mikanos/kernel
-$ source ~/osbook/devenv/buildenv.sh
-$ make
-```
-
 # How to build Loader
 
 ```sh
@@ -26,10 +18,11 @@ $ source edksetup.sh
 $ build
 ```
 
-# How to Run
+# How to build kernel and Run
 
 ```sh
-$ cd mikanos/kernel
-$ make run
+$ source ~/osbook/devenv/buildenv.sh
+$ cd mikanos
+$ ./build.sh run
 ```
 
