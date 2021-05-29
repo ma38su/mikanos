@@ -1,10 +1,8 @@
-// #@@range_begin(include_stdlib)
 #include <cstring>
 #include <cstdlib>
 
 int stack_ptr;
 long stack[100];
-// #@@range_end(include_stdlib)
 
 long Pop() {
   long value = stack[stack_ptr];
@@ -34,8 +32,11 @@ extern "C" int main(int argc, char** argv) {
       Push(a);
     }
   }
+  // #@@range_begin(rpn_main)
   if (stack_ptr < 0) {
     return 0;
   }
-  return static_cast<int>(Pop());
+  while (1);
+  //return static_cast<int>(Pop());
+  // #@@range_end(rpn_main)
 }

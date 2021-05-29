@@ -41,6 +41,7 @@ void Console::SetWriter(PixelWriter* writer) {
   if (writer == writer_) {
     return;
   }
+  window_.reset();
   writer_ = writer;
   Refresh();
 }
@@ -49,7 +50,6 @@ void Console::SetWindow(const std::shared_ptr<Window>& window) {
   if (window == window_) {
     return;
   }
-  window_.reset();
   window_ = window;
   writer_ = window->Writer();
   Refresh();
