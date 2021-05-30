@@ -81,6 +81,11 @@ GetCR3:
     mov rax, cr3
     ret
 
+global GetRSP  ; uint64_t GetRSP(void);
+GetRSP:
+    mov rax, rsp
+    ret
+
 extern kernel_main_stack
 extern KernelMainNewStack
 
