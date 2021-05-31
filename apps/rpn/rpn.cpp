@@ -1,7 +1,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <cstdio>
-
+#include "../syscall.h"
 
 int stack_ptr;
 long stack[100];
@@ -16,8 +16,6 @@ void Push(long value) {
   ++stack_ptr;
   stack[stack_ptr] = value;
 }
-
-extern "C" void SyscallExit(int exit_code);
 
 extern "C" void main(int argc, char** argv) {
   stack_ptr = -1;
@@ -36,12 +34,12 @@ extern "C" void main(int argc, char** argv) {
       Push(a);
     }
   }
-
   long result = 0;
   // #@@range_begin(rpn_main)
   if (stack_ptr >= 0) {
     result = Pop();
   }
+
   printf("%ld\n", result);
   SyscallExit(static_cast<int>(result));
   //return static_cast<int>(Pop());
