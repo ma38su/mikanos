@@ -1,6 +1,5 @@
 #!/bin/sh -eu
 
-
 make ${MAKE_OPTS:-} -C kernel kernel.elf
 
 for MK in $(ls apps/*/Makefile)

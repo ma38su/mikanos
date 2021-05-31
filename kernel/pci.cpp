@@ -317,7 +317,6 @@ namespace pci {
     }
     return ConfigureMSI(dev, msg_addr, msg_data, num_vector_exponent);
   }
-
 }
 
 void InitializePCI() {
