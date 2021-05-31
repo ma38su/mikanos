@@ -11,7 +11,8 @@ extern "C" void main(int argc, char** argv) {
     exit(err_openwin);
   }
 
-  SyscallWinFillRectangle(layer_id | LAYER_NO_REDRAW, 4, 24, kWidth, kHeight, 0x000000);
+  SyscallWinFillRectangle(layer_id | LAYER_NO_REDRAW,
+                          4, 24, kWidth, kHeight, 0x000000);
 
   int num_stars = 100;
   if (argc >= 2) {
@@ -19,6 +20,7 @@ extern "C" void main(int argc, char** argv) {
   }
 
   auto [tick_start, timer_freq] = SyscallGetCurrentTick();
+
   std::default_random_engine rand_engine;
   std::uniform_int_distribution x_dist(0, kWidth - 2), y_dist(0, kHeight - 2);
   for (int i = 0; i < num_stars; ++i) {
@@ -33,5 +35,6 @@ extern "C" void main(int argc, char** argv) {
   printf("%d stars in %lu ms.\n",
          num_stars,
          (tick_end.value - tick_start) * 1000 / timer_freq);
+
   exit(0);
 }

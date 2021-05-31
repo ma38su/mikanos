@@ -9,7 +9,7 @@ OBJS = main.o graphics.o mouse.o font.o hankaku.o newlib_support.o console.o \
        usb/classdriver/mouse.o
 DEPENDS = $(join $(dir $(OBJS)),$(addprefix .,$(notdir $(OBJS:.o=.d))))
 
-CPPFLAGS = -D__ELF__ -D_LDB_EQ_DBL -D_GNU_SOURCE -D_POSIX_TIMERS \
+CPPFLAGS += -D__ELF__ -D_LDB_EQ_DBL -D_GNU_SOURCE -D_POSIX_TIMERS \
            -nostdlibinc \
            -I$${HOME}/osbook/devenv/x86_64-elf/include/c++/v1 \
            -I$${HOME}/osbook/devenv/x86_64-elf/include \
@@ -29,7 +29,7 @@ clean:
 	rm -rf *.o *.bin *.d
 
 kernel.elf: $(OBJS) Makefile
-	ld.lld $(LDFLAGS) -o kernel.elf $(OBJS) -lc -lc++ -lc++abi
+	ld.lld $(LDFLAGS) -o kernel.elf $(OBJS) -lc -lc++ -lc++abi -lm
 
 %.o: %.cpp Makefile
 	clang++ $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
