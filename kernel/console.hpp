@@ -12,7 +12,7 @@ class Console {
   void PutString(const char* s);
   void SetWriter(PixelWriter* writer);
   void SetWindow(const std::shared_ptr<Window>& window);
-  void SetLayerID(const unsigned int layer_id);
+  void SetLayerID(unsigned int layer_id);
   unsigned int LayerID() const;
 
  private:
