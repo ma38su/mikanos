@@ -16,6 +16,8 @@
 #include "error.hpp"
 #include "message.hpp"
 
+#define MAIN_TASK_ID 1
+
 struct TaskContext {
   uint64_t cr3, rip, rflags, reserved1; // offset 0x00
   uint64_t cs, ss, fs, gs; // offset 0x20

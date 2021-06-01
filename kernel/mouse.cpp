@@ -67,6 +67,7 @@ namespace {
           msg.arg.mouse_button.x = relpos.x;
           msg.arg.mouse_button.y = relpos.y;
           msg.arg.mouse_button.press = (buttons >> i) & 1;
+          msg.arg.mouse_button.button = i;
           task_manager->SendMessage(task_it->second, msg);
         }
       }
