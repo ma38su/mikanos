@@ -16,7 +16,7 @@ class Timer {
   Timer(unsigned long timeout, int value, uint64_t task_id);
   unsigned long Timeout() const { return timeout_; }
   int Value() const { return value_; }
-  uint64_t TaskID() const { return task_id_; };
+  uint64_t TaskID() const { return task_id_; }
 
  private:
   unsigned long timeout_;

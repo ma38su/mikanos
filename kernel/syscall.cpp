@@ -241,6 +241,13 @@ SYSCALL(ReadEvent) {
           msg->arg.keyboard.modifier & (kLControlBitMask | kRControlBitMask)) {
         app_events[i].type = AppEvent::kQuit;
         ++i;
+      } else {
+        app_events[i].type = AppEvent::kKeyPush;
+        app_events[i].arg.keypush.modifier = msg->arg.keyboard.modifier;
+        app_events[i].arg.keypush.keycode = msg->arg.keyboard.keycode;
+        app_events[i].arg.keypush.ascii = msg->arg.keyboard.ascii;
+        app_events[i].arg.keypush.press = msg->arg.keyboard.press;
+        ++i;
       }
       break;
     case Message::kMouseMove:
@@ -264,7 +271,7 @@ SYSCALL(ReadEvent) {
       if (msg->arg.timer.value < 0) {
         app_events[i].type = AppEvent::kTimerTimeout;
         app_events[i].arg.timer.timeout = msg->arg.timer.timeout;
-        app_events[i].arg.timer.value = msg->arg.timer.value;
+        app_events[i].arg.timer.value = -msg->arg.timer.value;
         ++i;
       }
       break;

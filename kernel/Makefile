@@ -9,24 +9,19 @@ OBJS = main.o graphics.o mouse.o font.o hankaku.o newlib_support.o console.o \
        usb/classdriver/mouse.o
 DEPENDS = $(join $(dir $(OBJS)),$(addprefix .,$(notdir $(OBJS:.o=.d))))
 
-CPPFLAGS += -D__ELF__ -D_LDB_EQ_DBL -D_GNU_SOURCE -D_POSIX_TIMERS \
-           -nostdlibinc \
-           -I$${HOME}/osbook/devenv/x86_64-elf/include/c++/v1 \
-           -I$${HOME}/osbook/devenv/x86_64-elf/include \
-           -I$${HOME}/osbook/devenv/x86_64-elf/include/freetype2 \
-           -I.
+CPPFLAGS += -I.
 CFLAGS   += -O2 -Wall -g --target=x86_64-elf -ffreestanding -mno-red-zone
 CXXFLAGS += -O2 -Wall -g --target=x86_64-elf -ffreestanding -mno-red-zone \
             -fno-exceptions -fno-rtti -std=c++17
-LDFLAGS  += --entry KernelMain -z norelro --image-base 0x100000 --static \
-            -L$${HOME}/osbook/devenv/x86_64-elf/lib
+LDFLAGS  += --entry KernelMain -z norelro --image-base 0x100000 --static
+
 
 .PHONY: all
 all: $(TARGET)
 
 .PHONY: clean
 clean:
-	rm -rf *.o *.bin *.d
+	rm -rf *.o
 
 kernel.elf: $(OBJS) Makefile
 	ld.lld $(LDFLAGS) -o kernel.elf $(OBJS) -lc -lc++ -lc++abi -lm
@@ -34,8 +29,18 @@ kernel.elf: $(OBJS) Makefile
 %.o: %.cpp Makefile
 	clang++ $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
+.%.d: %.cpp
+	clang++ $(CPPFLAGS) $(CXXFLAGS) -MM $< > $@
+	$(eval OBJ = $(<:.cpp=.o))
+	sed --in-place 's|$(notdir $(OBJ))|$(OBJ)|' $@
+
 %.o: %.c Makefile
 	clang $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+
+.%.d: %.c
+	clang $(CPPFLAGS) $(CFLAGS) -MM $< > $@
+	$(eval OBJ = $(<:.c=.o))
+	sed --in-place 's|$(notdir $(OBJ))|$(OBJ)|' $@
 
 %.o: %.asm Makefile
 	nasm -f elf64 -o $@ $<
@@ -46,15 +51,11 @@ hankaku.bin: hankaku.txt
 hankaku.o: hankaku.bin
 	objcopy -I binary -O elf64-x86-64 -B i386:x86-64 $< $@
 
+.%.d: %.bin
+	touch $@
 
 .PHONY: depends
 depends:
 	$(MAKE) $(DEPENDS)
-
-.PHONY: run
-run: all
-	~/osbook/devenv/run_qemu.sh \
-    ~/edk2/Build/MikanLoaderX64/DEBUG_CLANG38/X64/Loader.efi \
-    ~/workspace/mikanos/kernel/kernel.elf
 
 -include $(DEPENDS)
