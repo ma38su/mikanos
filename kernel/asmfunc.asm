@@ -322,8 +322,14 @@ SyscallEntry:  ; void SyscallEntry(void);
     o64 sysret
 
 .exit:
-    mov rsp, rax
-    mov eax, edx
+    mov rdi, rax
+    mov esi, edx
+    jmp ExitApp
+
+global ExitApp  ; void ExitApp(uint64_t rsp, int32_t ret_val);
+ExitApp:
+    mov rsp, rdi
+    mov eax, esi
 
     pop r15
     pop r14
@@ -333,4 +339,3 @@ SyscallEntry:  ; void SyscallEntry(void);
     pop rbx
 
     ret  ; CallApp の次の行に飛ぶ
-    ; #@@range_end(exit_app)
