@@ -3,6 +3,7 @@
 #include "asmfunc.h"
 #include "segment.hpp"
 #include "timer.hpp"
+#include "paging.hpp"
 
 namespace {
   template <class T, class U>
