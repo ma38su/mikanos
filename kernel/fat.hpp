@@ -87,12 +87,10 @@ uintptr_t GetClusterAddr(unsigned long cluster);
  * @param cluster  クラスタ番号（2 始まり）
  * @return クラスタの先頭セクタが置いてあるメモリ領域へのポインタ
  */
-// #@@range_begin(get_sector)
 template <class T>
 T* GetSectorByCluster(unsigned long cluster) {
   return reinterpret_cast<T*>(GetClusterAddr(cluster));
 }
-// #@@range_end(get_sector)
 
 /** @brief ディレクトリエントリの短名を基本名と拡張子名に分割して取得する。
  * パディングされた空白文字（0x20）は取り除かれ，ヌル終端される。
@@ -102,6 +100,14 @@ T* GetSectorByCluster(unsigned long cluster) {
  * @param ext  拡張子（4 バイト以上の配列）
  */
 void ReadName(const DirectoryEntry& entry, char* base, char* ext);
+
+/** @brief ディレクトリエントリの短名を dest にコピーする。
+ * 短名の拡張子が空なら "<base>" を，空でなければ "<base>.<ext>" をコピー。
+ *
+ * @param entry  ファイル名を得る対象のディレクトリエントリ
+ * @param dest  基本名と拡張子を結合した文字列を格納するに十分な大きさの配列。
+ */
+void FormatName(const DirectoryEntry& entry, char* dest);
 
 static const unsigned long kEndOfClusterchain = 0x0ffffffflu;
 
@@ -116,9 +122,13 @@ unsigned long NextCluster(unsigned long cluster);
  *
  * @param name  8+3形式のファイル名（大文字小文字は区別しない）
  * @param directory_cluster  ディレクトリの開始クラスタ（省略するとルートディレクトリから検索する）
- * @return ファイルを表すエントリ。見つからなければ nullptr。
+ * @return ファイルまたはディレクトリを表すエントリと，末尾スラッシュを示すフラグの組。
+ *   ファイルまたはディレクトリが見つからなければ nullptr。
+ *   エントリの直後にスラッシュがあれば true。
+ *   パスの途中のエントリがファイルであれば探索を諦め，そのエントリと true を返す。
  */
-DirectoryEntry* FindFile(const char* name, unsigned long directory_cluster = 0);
+std::pair<DirectoryEntry*, bool>
+FindFile(const char* path, unsigned long directory_cluster = 0);
 
 bool NameIsEqual(const DirectoryEntry& entry, const char* name);
 
