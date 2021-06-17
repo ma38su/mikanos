@@ -3,7 +3,6 @@
 #include "asmfunc.h"
 #include "segment.hpp"
 #include "timer.hpp"
-#include "paging.hpp"
 
 namespace {
   template <class T, class U>
@@ -15,6 +14,7 @@ namespace {
   void TaskIdle(uint64_t task_id, int64_t data) {
     while (true) __asm__("hlt");
   }
+
 } // namespace
 
 Task::Task(uint64_t id) : id_{id}, msgs_{} {
@@ -81,6 +81,22 @@ std::optional<Message> Task::ReceiveMessage() {
 
 std::vector<std::unique_ptr<::FileDescriptor>>& Task::Files() {
   return files_;
+}
+
+uint64_t Task::DPagingBegin() const {
+  return dpaging_begin_;
+}
+
+void Task::SetDPagingBegin(uint64_t v) {
+  dpaging_begin_ = v;
+}
+
+uint64_t Task::DPagingEnd() const {
+  return dpaging_end_;
+}
+
+void Task::SetDPagingEnd(uint64_t v) {
+  dpaging_end_ = v;
 }
 
 TaskManager::TaskManager() {
