@@ -14,7 +14,6 @@ namespace {
   void TaskIdle(uint64_t task_id, int64_t data) {
     while (true) __asm__("hlt");
   }
-
 } // namespace
 
 Task::Task(uint64_t id) : id_{id}, msgs_{} {
@@ -97,6 +96,18 @@ uint64_t Task::DPagingEnd() const {
 
 void Task::SetDPagingEnd(uint64_t v) {
   dpaging_end_ = v;
+}
+
+uint64_t Task::FileMapEnd() const {
+  return file_map_end_;
+}
+
+void Task::SetFileMapEnd(uint64_t v) {
+  file_map_end_ = v;
+}
+
+std::vector<FileMapping>& Task::FileMaps() {
+  return file_maps_;
 }
 
 TaskManager::TaskManager() {
