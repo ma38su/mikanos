@@ -146,13 +146,13 @@ Error FreePML4(Task& current_task) {
 }
 
 void ListAllEntries(Terminal* term, uint32_t dir_cluster) {
-  const auto entries_per_cluster =
+  const auto kEntriesPerCluster =
     fat::bytes_per_cluster / sizeof(fat::DirectoryEntry);
 
   while (dir_cluster != fat::kEndOfClusterchain) {
     auto dir = fat::GetSectorByCluster<fat::DirectoryEntry>(dir_cluster);
 
-    for (int i = 0; i < entries_per_cluster; ++i) {
+    for (int i = 0; i < kEntriesPerCluster; ++i) {
       if (dir[i].name[0] == 0x00) {
         return;
       } else if (static_cast<uint8_t>(dir[i].name[0]) == 0xe5) {
@@ -365,6 +365,18 @@ void Terminal::ExecuteLine() {
     task_manager->NewTask()
       .InitContext(TaskTerminal, reinterpret_cast<int64_t>(first_arg))
       .Wakeup();
+  } else if (strcmp(command, "memstat") == 0) {
+    const auto p_stat = memory_manager->Stat();
+
+    char s[64];
+    sprintf(s, "Phys used : %lu frames (%llu MiB)\n",
+        p_stat.allocated_frames,
+        p_stat.allocated_frames * kBytesPerFrame / 1024 / 1024);
+    Print(s);
+    sprintf(s, "Phys total: %lu frames(%llu MiB)\n",
+        p_stat.total_frames,
+        p_stat.total_frames * kBytesPerFrame / 1024 / 1024);
+    Print(s);
   } else if (command[0] != 0) {
     auto [ file_entry, post_slash ] = fat::FindFile(command);
     if (!file_entry) {

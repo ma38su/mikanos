@@ -1,5 +1,6 @@
 #include "memory_manager.hpp"
 
+#include <bitset>
 #include "logger.hpp"
 
 BitmapMemoryManager::BitmapMemoryManager()
@@ -15,16 +16,19 @@ WithError<FrameID> BitmapMemoryManager::Allocate(size_t num_frames) {
         return {kNullFrame, MAKE_ERROR(Error::kNoEnoughMemory)};
       }
       if (GetBit(FrameID{start_frame_id + i})) {
+        // "start_frame_id + i" にあるフレームは割り当て済み
         break;
       }
     }
     if (i == num_frames) {
+      // num_frames 分の空きが見つかった
       MarkAllocated(FrameID{start_frame_id}, num_frames);
       return {
         FrameID{start_frame_id},
         MAKE_ERROR(Error::kSuccess),
       };
     }
+    // 次のフレームから再検索
     start_frame_id += i + 1;
   }
 }
@@ -45,6 +49,15 @@ void BitmapMemoryManager::MarkAllocated(FrameID start_frame, size_t num_frames) 
 void BitmapMemoryManager::SetMemoryRange(FrameID range_begin, FrameID range_end) {
   range_begin_ = range_begin;
   range_end_ = range_end;
+}
+
+MemoryStat BitmapMemoryManager::Stat() const {
+  size_t sum = 0;
+  for (int i = range_begin_.ID() / kBitsPerMapLine;
+       i < range_end_.ID() / kBitsPerMapLine; ++i) {
+    sum += std::bitset<kBitsPerMapLine>(alloc_map_[i]).count();
+  }
+  return { sum, range_end_.ID() - range_begin_.ID() };
 }
 
 bool BitmapMemoryManager::GetBit(FrameID frame) const {
