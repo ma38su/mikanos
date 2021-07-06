@@ -23,6 +23,6 @@ $ build
 ```sh
 $ source ~/osbook/devenv/buildenv.sh
 $ cd mikanos
-$ APPS_DIR=apps ./build.sh run
+$ APPS_DIR=apps RESOURCE_DIR=resource ./build.sh run
 ```
 
