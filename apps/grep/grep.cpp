@@ -23,7 +23,7 @@ extern "C" void main(int argc, char** argv) {
   while (fgets(line, sizeof(line), fp)) {
     std::cmatch m;
     if (std::regex_search(line, m, pattern)) {
-      printf(line);
+      printf("%s", line);
     }
   }
   exit(0);
